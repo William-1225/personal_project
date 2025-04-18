@@ -1,1 +1,1 @@
-Just some simple projects I've already done.
+Just a simple space exploration game I've already done.
