@@ -13,6 +13,7 @@ map, interact with entities, and aim to reach the destination.
 from ship import Ship
 from space_map import create_map, display_map, populate_map
 
+
 # define map size
 def get_map_size() -> int:
     while True:
@@ -26,6 +27,7 @@ def get_map_size() -> int:
         except ValueError:
             print('Error: map_size must always be an integer')    
 
+
 # create a space map
 def set_navigation_system() -> list[list[str]]:
     size = get_map_size()
@@ -34,8 +36,10 @@ def set_navigation_system() -> list[list[str]]:
     populate_map(grid)
     return grid
 
+
 # create a Ship
 def set_ship_system() -> Ship:
+
     # check ship_name
     while True:
         ship_name = input('Enter ship name: ')
@@ -43,6 +47,7 @@ def set_ship_system() -> Ship:
             print('Error: empty ship name')
             continue
         break
+    
     # check the value of ship_fuel input
     while True:
         try:
@@ -56,37 +61,39 @@ def set_ship_system() -> Ship:
         except ValueError:
             print('Error: fuel must always be an integer')
         break
+    
     # ship object
     ship = Ship(ship_name, ship_fuel)
     return ship
+
 
 # check game-ending conditions
 def check_game_ending_conditions(ship: Ship, grid: list[list[str]]) -> bool:
     x, y = ship.get_coordinates()
     # win
-    if ship.land_at_destination():
-        print('Odyssey has reached: Sector 9-Delta')
+    if ship.destination_reached:
         grid[y][x] = 'W'
         display_map(grid)
         print('\n>>> MISSION COMPLETED')
         return True
     # lose except command'q'
-    if ship.is_out_of_fuel():
+    elif ship.is_out_of_fuel():
         print(f'{ship.name} is out of fuel.')
         grid[y][x] = 'L'
         display_map(grid)
         print('\n>>> MISSION FAILED')
         return True
-    if ship.is_out_of_health():
-        print(f'{ship.name} has fallen.')
+    elif ship.is_out_of_health():
         grid[y][x] = 'L'
         display_map(grid)
         print('\n>>> MISSION FAILED')
         return True
     return False
 
+
 # interaction
 def process_command(command: str, ship: Ship, grid: list[list[str]], directions: dict) -> bool:
+    
     # check command
     available_commands = ['map', 'status', 'n', 'e', 's', 'w', 'q']
     if command == 'map':
@@ -102,28 +109,32 @@ def process_command(command: str, ship: Ship, grid: list[list[str]], directions:
         display_map(grid)
         print('\n>>> MISSION FAILED')
         return False
+    
     # get coordinates
-    current_x, current_y = ship.get_coordinates()
+    x, y = ship.get_coordinates()
+    
     # movement
     directions = {'n': (0, -1), 's': (0, 1), 'e': (1, 0), 'w': (-1, 0)}
     delta_x, delta_y = directions[command]
+    
     # check new coordinates
-    new_x, new_y = current_x + delta_x, current_y + delta_y
+    new_x, new_y = x + delta_x, y + delta_y
     if not (0 <= new_x < len(grid[0]) and 0 <= new_y < len(grid)):
         print('Error: out of bounds')
         return True
+    
     # check symbol at new coordinate
     symbol = grid[new_y][new_x]
+    
     # interaction between ship and symbol
     moved = ship.interact(symbol, new_x, new_y) 
     if not moved:
         return True
+    
     # update map
-    grid[current_y][current_x] = ' ' 
+    grid[y][x] = ' ' 
     ship.set_coordinates(new_x, new_y)
     grid[new_y][new_x] = '@'
-    if check_game_ending_conditions(ship, grid):
-        return False
     return True
 
 
