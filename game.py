@@ -117,13 +117,13 @@ def process_command(command: str, ship: Ship, grid: list[list[str]], directions:
     directions = {'n': (0, -1), 's': (0, 1), 'e': (1, 0), 'w': (-1, 0)}
     delta_x, delta_y = directions[command]
     
-    # check new coordinates
+    # check borders
     new_x, new_y = x + delta_x, y + delta_y
     if not (0 <= new_x < len(grid[0]) and 0 <= new_y < len(grid)):
         print('Error: out of bounds')
         return True
     
-    # check symbol at new coordinate
+    # symbol at new coordinate
     symbol = grid[new_y][new_x]
     
     # interaction between ship and symbol
